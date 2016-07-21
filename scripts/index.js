@@ -236,7 +236,7 @@ canvas.height = window.innerHeight;
 var ocean = new Ocean(canvas.width, canvas.height);
 ocean.add_reef(new Reef(200, 200, 200, 200));
 //ocean.lines = ocean.get_lines();
-//ocean.triangulate();
+ocean.triangulate();
 
 canvas.addEventListener('click', function(e) {
   var rect = canvas.getBoundingClientRect();
@@ -252,8 +252,10 @@ school.set_target({x : 600, y : 600});
 var previous_time;
 var playing = true;
 
+document.showing = true;
+
 function step(t) {
-  if(playing) {
+  if(playing && document.showing) {
     var time_delta = previous_time === undefined ? 0 : t - previous_time;
 
     school.fish.forEach(function(fish) {
@@ -269,18 +271,22 @@ function step(t) {
   window.requestAnimationFrame(step);
 }
 
+document.addEventListener("blur", function(e) {document.showing = false; console.log("not showing");});
+document.addEventListener("focus", function(e) {document.showing = true; console.log("showing");});
+
 document.addEventListener("keypress", function(e) {
   if(e.keyCode === 32) {
     playing = !playing;
     e.preventDefault();
   }
 });
-//step();
+step();
 
-
+/*
 lb = new Line(new Point(400,400), new Point(400,200));
 l = new Line(new Point(200,200), new Point(1280, 381));
 l.draw(context);
 lb.draw(context);
 //console.log(l.equals_or_intersects(lb));
 l.equals_or_intersects(lb).draw(context);
+*/
