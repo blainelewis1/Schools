@@ -250,6 +250,7 @@ canvas.addEventListener('click', function(e) {
 school.set_target({x : 600, y : 600});
 
 var previous_time;
+var was_hidden = false;
 var playing = true;
 
 document.showing = true;
@@ -257,6 +258,11 @@ document.showing = true;
 function step(t) {
   if(playing && document.showing) {
     var time_delta = previous_time === undefined ? 0 : t - previous_time;
+
+    if(was_hidden) {
+        time_delta = 0;
+        was_hidden = false;
+    }
 
     school.fish.forEach(function(fish) {
       fish.move(time_delta, school.fish);
@@ -271,8 +277,11 @@ function step(t) {
   window.requestAnimationFrame(step);
 }
 
-document.addEventListener("blur", function(e) {document.showing = false; console.log("not showing");});
-document.addEventListener("focus", function(e) {document.showing = true; console.log("showing");});
+document.addEventListener("visibilitychange", function (e) {
+    if(document.hidden) {
+        was_hidden = true;
+    }
+});
 
 document.addEventListener("keypress", function(e) {
   if(e.keyCode === 32) {
