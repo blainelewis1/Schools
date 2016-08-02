@@ -1,6 +1,0 @@
-{
-    "title" : "School",
-    "summary" : "Work in progress attempting to create a school of fish who can pathfind around various objects in an open world. It'll use djkstra's and a deluanay triangulation to find it's way around a user generated map. Fish of various shapes and sizes will maintain formation as they go through the map.",
-    "technologies" : ["canvas", "Javascript"],
-    "tags" : ["pathfinding"]
-}
