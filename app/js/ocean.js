@@ -13,12 +13,28 @@ function Ocean(width, height, reefs) {
     this.retriangulate();
 }
 
+//TODO: create a triangulation for every size of fish
 Ocean.prototype.retriangulate = function () {
     this.triangulation = new Triangulation(this.get_points(), this.get_lines(), this.get_diags());
 };
 
+Ocean.prototype.resize = function(width, height) {
+    this.width = width;
+    this.height = height;
+
+    this.retriangulate();
+};
+
 Ocean.prototype.get_path_to = function(start_point, end_point) {
     return this.triangulation.find_path(start_point, end_point);
+};
+
+Ocean.prototype.get_reef_under_point = function(p) {
+    for(var i = 0; i < this.reefs.length; i++) {
+        if(this.reefs[i].contains(p)) {
+            return this.reefs[i];
+        }
+    }
 };
 
 Ocean.prototype.get_points = function() {
@@ -60,6 +76,11 @@ Ocean.prototype.get_diags = function() {
 
 Ocean.prototype.add_reef = function(reef) {
     this.reefs.push(reef);
+    this.retriangulate();
+};
+
+Ocean.prototype.delete_reef = function(reef) {
+    this.reefs.splice(this.reefs.indexOf(reef), 1);
     this.retriangulate();
 };
 

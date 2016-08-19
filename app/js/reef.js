@@ -48,4 +48,8 @@ Reef.prototype.intersects = function(line) {
     return diag1.intersects(line) ||  diag2.intersects(line);
 };
 
+Reef.prototype.contains = function(p) {
+    return p.x >= this.x && p.y >= this.y && p.x <= this.x + this.width && p.y <= this.y + this.height;
+};
+
 module.exports = Reef;

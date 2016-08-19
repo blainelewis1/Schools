@@ -175,41 +175,43 @@ Triangle.prototype.add_neighbor = function(t) {
     this.neighbors.push(t);
 };
 
-Triangle.prototype.draw = function(context, color) {
+Triangle.prototype.fill_triangle = function(context, color) {
+    context.beginPath();
+    context.fillStyle = this.color;
+    context.moveTo(this.points[0].x, this.points[0].y);
 
-    if (DEBUG > 5) {
+    context.lineTo(this.points[1].x, this.points[1].y);
+    context.lineTo(this.points[2].x, this.points[2].y);
+    context.lineTo(this.points[0].x, this.points[0].y);
+    context.fill();
+};
+
+Triangle.prototype.draw_weights = function(context) {
+    context.fillStyle = "#222222";
+
+    for (var i = 0; i < this.neighbors.length; i++) {
+        var d = this.get_center().distance(this.neighbors[i].get_center());
+        context.fillText(d.toFixed(0), (this.get_center().x + this.neighbors[i].get_center().x) / 2 + 10, (this.get_center().y + this.neighbors[i].get_center().y) / 2 + 10);
+    }
+};
+
+Triangle.prototype.draw_edges = function(context) {
+    context.strokeStyle = "#AAAAAA";
+    context.lineWidth = 3;
+    for (var i = 0; i < this.neighbors.length; i++) {
+
         context.beginPath();
-        context.fillStyle = this.color;
-        context.moveTo(this.points[0].x, this.points[0].y);
-
-        context.lineTo(this.points[1].x, this.points[1].y);
-        context.lineTo(this.points[2].x, this.points[2].y);
-        context.lineTo(this.points[0].x, this.points[0].y);
-        context.fill();
+        context.moveTo(this.get_center().x, this.get_center().y);
+        context.lineTo(this.neighbors[i].get_center().x, this.neighbors[i].get_center().y);
+        context.stroke();
     }
+};
 
-    if (DEBUG > 2) {
-        context.fillStyle = "#222222";
-
-        context.strokeStyle = "#AAAAAA";
-        for (var i = 0; i < this.neighbors.length; i++) {
-
-            context.beginPath();
-            context.moveTo(this.get_center().x, this.get_center().y);
-            context.lineTo(this.neighbors[i].get_center().x, this.neighbors[i].get_center().y);
-            context.stroke();
-            if (DEBUG > 3) {
-                var d = this.get_center().distance(this.neighbors[i].get_center());
-                context.fillText(d.toFixed(0), (this.get_center().x + this.neighbors[i].get_center().x) / 2 + 10, (this.get_center().y + this.neighbors[i].get_center().y) / 2 + 10);
-            }
-        }
-    }
-
-    if (DEBUG > 0) {
-        context.beginPath();
-        context.arc(this.get_center().x, this.get_center().y, 8, 8, 0, Math.PI * 2);
-        context.fill();
-    }
+Triangle.prototype.draw_vertex = function(context) {
+    context.fillStyle = "#222222";
+    context.beginPath();
+    context.arc(this.get_center().x, this.get_center().y, 8, 8, 0, Math.PI * 2);
+    context.fill();
 };
 
 function getRandomColor() {
