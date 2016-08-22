@@ -49,6 +49,10 @@ Controls.prototype.add_control = function(control) {
     this.div.appendChild(control);
 };
 
+Controls.prototype.create_id = function() {
+    return Math.random().toString(36).substring(7);
+};
+
 Controls.prototype.button = function(text, click) {
     var input = document.createElement("input");
     input.type = "button";
@@ -59,24 +63,26 @@ Controls.prototype.button = function(text, click) {
 };
 
 Controls.prototype.slider = function(text, obj, prop, min, max, step) {
-    var label = document.createElement("label");
-    label.innerHTML = text;
-
     var input = document.createElement("input");
     input.type = "range";
+    input.id = this.create_id();
     input.min = min;
     input.max = max;
     input.step = step;
     input.value = obj[prop];
 
     input.addEventListener("input", function(e) {
-        console.log(e.target.value);
         obj[prop] = e.target.value;
+        label.innerText = label.textContent = text + " " + obj[prop];
     });
+
+    var label = document.createElement("label");
+    label.innerText = label.textContent = text + " " + obj[prop];
+    label.for = input.id;
 
     var div = document.createElement("div");
     div.appendChild(label);
-    label.appendChild(input);
+    div.appendChild(input);
 
     this.add_control(div);
 };
@@ -90,7 +96,6 @@ Controls.prototype.radio = function(text, obj, prop, values, value) {
 
     function update(e) {
         obj[prop] = e.target.value;
-        console.log(obj);
     }
 
     for(var i = 0; i < values.length; i++) {

@@ -24,6 +24,10 @@ Line.prototype.toString = function() {
     return this.p1.toString() + " => " + this.p2.toString();
 };
 
+Line.prototype.hashCode = function() {
+    return this.p1.hashCode() + this.p2.hashCode();
+};
+
 Line.prototype.intersects = function(line) {
     if (this.equals(line)) {
         return true;
@@ -123,12 +127,20 @@ Point.prototype.draw = function(context, color) {
     context.fill();
 };
 
-function Triangle(e1, e2, e3, points) {
-    this.edges = [e1, e2, e3];
+Point.prototype.hashCode = function() {
+    return this.x + this.y;
+};
+
+function Triangle(p1,p2,p3) {
+    this.edges = [new Line(p1,p2), new Line(p2,p3), new Line(p3,p1)];
     this.neighbors = [];
-    this.points = points;
+    this.points = [p1,p2,p3];
     this.color = getRandomColor();
 }
+
+Triangle.prototype.equals = function(x) {
+    return this.get_center().equals(x.get_center());
+};
 
 Triangle.prototype.get_center = function() {
     //Centroid:
@@ -144,6 +156,10 @@ Triangle.prototype.get_center = function() {
 
 Triangle.prototype.distance = function(t) {
     return this.get_center().distance(t.get_center());
+};
+
+Triangle.prototype.hashCode = function() {
+    return this.points[0].hashCode() + this.points[1].hashCode() + this.points[2].hashCode();
 };
 
 Triangle.prototype.contains = function(p) {
@@ -175,7 +191,7 @@ Triangle.prototype.add_neighbor = function(t) {
     this.neighbors.push(t);
 };
 
-Triangle.prototype.fill_triangle = function(context, color) {
+Triangle.prototype.fill_triangle = function(context) {
     context.beginPath();
     context.fillStyle = this.color;
     context.moveTo(this.points[0].x, this.points[0].y);
