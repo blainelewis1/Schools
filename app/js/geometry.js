@@ -54,8 +54,6 @@ Line.prototype.intersects = function(line) {
         //Colinear, either they overlap or they don't...
         //If they share one point, then they overlap if any of the points falls within the range of the lines.
         //If they share both they're equal, which we cover above
-
-
     }
 
     return false;
@@ -89,6 +87,10 @@ Point.prototype.toString = function() {
 
 Point.prototype.equals = function(point) {
     return this.x === point.x && this.y === point.y;
+};
+
+Point.prototype.fuzzyEquals = function(point, epsilon) {
+    return Math.abs(this.x - point.x) < epsilon && Math.abs(this.y - point.y) < epsilon;
 };
 
 Point.prototype.subtract = function(v) {
@@ -139,7 +141,7 @@ function Triangle(p1,p2,p3) {
 }
 
 Triangle.prototype.equals = function(x) {
-    return this.get_center().equals(x.get_center());
+    return this.get_center().fuzzyEquals(x.get_center(), 0.01);
 };
 
 Triangle.prototype.get_center = function() {

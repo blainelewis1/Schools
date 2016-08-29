@@ -13,7 +13,7 @@ function Triangulation(points, constraints, removable_constraints) {
     var triangulated = this.triangulate(points, this.constraints, removable_constraints);
 
     this.lines = triangulated.lines;
-    this.graph = this.build_graph(this.lines, triangulated.edges);
+    this.graph = this.build_graph(this.lines, triangulated.edges, constraints);
 
 }
 
@@ -22,14 +22,12 @@ Triangulation.prototype.triangulate = function(points, constraints, removable_co
     var edges = new SetMultiMap();
 
     var lines = constraints.slice();
+
     for(var k = 0; k < constraints.length; k++) {
         var l = constraints[k];
         edges.put(l.p1, l.p2);
         edges.put(l.p2, l.p1);
     }
-
-    //TODO: Do I need to add the sorrounding to the lines ahead of time.
-
 
     for (var i = 0; i < points.length; i++) {
         for (var j = i + 1; j < points.length; j++) {
@@ -49,39 +47,25 @@ Triangulation.prototype.triangulate = function(points, constraints, removable_co
     };
 };
 
-Triangulation.prototype.build_graph = function(lines, connects) {
+Triangulation.prototype.build_graph = function(lines, connects, constraints) {
+    //TODO: never traverse the constraints (especially not the outer ones)
+
     var graph = [];
-
-    //lines could be a set, connects a hashmap
-
-    //TODO: instead we can form a multimap, so that each key is a point and the values are the
-    // points it connects to
-    // initialise with a random edge: A,B.
-    // checked = []
-    // while there are nodes to check
-    //      take a,b = nodes.pop()
-    //      set AB as searched.
-    //      find points c and d such that a and b share an edge.
-    //
-    //          if(checked(cd)) then we set them and neighbours, if it's not checked we create a new triangle and set them neighbours.
-    //      abc is now a triangle
-    //      We now add AC, BC to the search.
-    //
-    //
-
-    //TODO: in case of disconnected graphs, we remove every line we check
-    //Then we can check at the end if there are any lines left in it, if there are then
-    // we need to neighborise them.
 
     lines = new HashSet(lines);
 
-    //connectivity map
+
     var checked = new HashSet();
     var triangles = new HashSet();
     var triangles_by_edges = new SetMultiMap();
     var to_check = [lines.get_any()];
     //add an edge.
     var context = document.getElementsByTagName("canvas")[0].getContext("2d");
+
+    for(var l = 0; l < constraints.length; l++){
+        lines.remove(constraints[l]);
+        checked.add(constraints[l]);
+    }
 
     while (to_check.length || lines.length) {
         var checking;
@@ -101,8 +85,6 @@ Triangulation.prototype.build_graph = function(lines, connects) {
         var p2_neighbors = connects.get(checking.p2);
         var shared_points = this.duplicated(p1_neighbors.concat(p2_neighbors));
 
-        // console.log(shared_points.length);
-
         var ts = [];
 
         for (var i = 0; i < shared_points.length; i++) {
@@ -110,19 +92,19 @@ Triangulation.prototype.build_graph = function(lines, connects) {
             var t = new Triangle(checking.p1, checking.p2, p3);
             var p1p2p3 = triangles.get(t);
 
+            t.fill_triangle(context);
+            checking.draw(context);
+            
+            debugger;
 
             if (!p1p2p3) {
                 p1p2p3 = t;
                 triangles.add(p1p2p3);
-                t.fill_triangle(context);
-            } else {
-                // console.log(p1p2p3.get_center());
-                // debugger;
             }
 
             var p1p3 = new Line(checking.p1, p3);
 
-            triangles_by_edges.put(checking, t);
+            triangles_by_edges.put(checking, p1p2p3);
 
             if (!checked.contains(p1p3)) {
                 to_check.push(p1p3);
@@ -135,10 +117,9 @@ Triangulation.prototype.build_graph = function(lines, connects) {
 
             ts.push(p1p2p3);
         }
-
     }
 
-    //TODO: could probably do this inline;
+    //TODO: could probably do this inline (like in the for loops)
     var triangle_arr = triangles.to_array();
     for(var j = 0; j < triangle_arr.length; j++) {
         var triangle = triangle_arr[j];
@@ -151,11 +132,7 @@ Triangulation.prototype.build_graph = function(lines, connects) {
                 triangle.add_neighbor(neighbs[k]);
             }
         }
-
-        //console.log(triangle.neighbors);
     }
-
-    console.log(triangles.to_array());
 
     return triangle_arr;
 };
@@ -182,8 +159,6 @@ Triangulation.prototype.build_graph = function(lines, connects) {
 // return graph;
 
 Triangulation.prototype.get_closest_triangle = function(p) {
-    //TODO: I could sort the graph and make this faster.
-
     var min_d = Infinity;
     var min;
 
@@ -258,32 +233,6 @@ Triangulation.prototype.construct_path = function(node, start_point, end_point) 
     this.reduce_path(path);
 
     return path;
-};
-
-Triangulation.prototype.unique = function() {
-    var to_test;
-
-    if(Object.prototype.toString.apply(arguments[0]) === "[object Array]") {
-        to_test = arguments[0];
-    } else {
-        to_test = arguments;
-    }
-
-    var arr = [];
-    for (var i = 0; i < to_test.length; i++) {
-        var contained = false;
-        for (var j = 0; j < arr.length; j++) {
-            if (to_test[i].equals(arr[j])) {
-                contained = true;
-                break;
-            }
-        }
-        if (!contained) {
-            arr.push(to_test[i]);
-        }
-    }
-
-    return arr;
 };
 
 Triangulation.prototype.duplicated = function(arr) {

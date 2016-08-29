@@ -18,17 +18,19 @@ CONFIG.DEBUG = 3;
     var controls = new Controls();
     controls.slider("Debug: ", CONFIG, "DEBUG", 0, 10, 1);
 
-    var ocean = new Ocean(canvas.width, canvas.height, [new Reef(400, 400, 200, 200)]);
+    //debugger;
+    var ocean = new Ocean(canvas.width, canvas.height, [new Reef(300, 100, 250, 200)]);
 
     //TODO: controllable spawning
 
-    var school = new School(ocean, new Point(500,400));
-    school.add_fish(new Fish(200, 120, 10, 0.25));
-    school.add_fish(new Fish(200, 120, 10, 0.2));
-    school.add_fish(new Fish(30, 300, 10, 0.5));
-    school.add_fish(new Fish(130, 500, 20, 0.05));
-    school.add_fish(new Fish(230, 150, 20, 0.1));
-    school.add_fish(new Fish(230, 150, 20, 0.15));
+    var school = new School(ocean, new Point(500,500));
+    // school.add_fish(new Fish(200, 120, 10, 0.25));
+    // school.add_fish(new Fish(200, 120, 10, 0.2));
+    // school.add_fish(new Fish(30, 300, 10, 0.5));
+    // school.add_fish(new Fish(130, 500, 20, 0.05));
+    // school.add_fish(new Fish(230, 150, 20, 0.1));
+    // school.add_fish(new Fish(230, 150, 20, 0.15));
+    school.add_fish(new Fish(600, 600, 20, 0.2));
 
     var mouse = new Mouse(school, ocean, canvas);
     controls.radio("Mode: ", mouse, "mode", mouse.modes);
@@ -69,11 +71,13 @@ CONFIG.DEBUG = 3;
             was_hidden = true;
         }
     });
+
     document.addEventListener("keypress", function(e) {
         if (e.keyCode === 32) {
             playing = !playing;
             e.preventDefault();
         }
     });
+
     step();
 })();

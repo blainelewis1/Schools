@@ -26,6 +26,27 @@ HashMap.prototype.get = function(key) {
     return undefined;
 };
 
+HashMap.prototype.getKey = function(key) {
+    if(!key) {
+        return undefined;
+    }
+
+    var bucket = this.buckets[this.hash(key)];
+
+    if(!bucket) {
+        return undefined;
+    }
+
+    for(var i = 0; i < bucket.keys.length; i++) {
+        if(bucket.keys[i].equals(key)) {
+            return bucket.keys[i];
+        }
+    }
+
+    return undefined;
+};
+
+
 HashMap.prototype.put = function(key, value) {
     //TODO: resize the buckets if need be.
     var bucket = this.buckets[this.hash(key)];
@@ -84,14 +105,16 @@ HashSet.prototype.add = function(val) {
 };
 
 HashSet.prototype.contains = function(val) {
-    if(this.map.get(val)) {
-        return val;
+    var value = this.map.getKey(val);
+    if(value) {
+        return value;
     }
 };
 
 HashSet.prototype.get = function(val) {
-    if(this.map.get(val)) {
-        return val;
+    var value = this.map.getKey(val);
+    if(value) {
+        return value;
     }
 };
 
