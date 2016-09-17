@@ -94,8 +94,6 @@ Triangulation.prototype.build_graph = function(lines, connects, constraints) {
 
             t.fill_triangle(context);
             checking.draw(context);
-            
-            debugger;
 
             if (!p1p2p3) {
                 p1p2p3 = t;
